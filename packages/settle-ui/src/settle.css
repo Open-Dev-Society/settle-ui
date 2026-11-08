@@ -1,0 +1,218 @@
+@property --settle-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.settle {
+  --c1: #b7a4ff;
+  --c2: #8fd4ff;
+  --c3: #f5c2e0;
+  --c4: #c8fff1;
+  --surface: #fffcf8;
+  --ink: #1c1917;
+  --line: color-mix(in srgb, var(--ink) 14%, var(--surface));
+  --settle-angle: 0deg;
+  position: relative;
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  color: var(--ink);
+  isolation: isolate;
+}
+
+.settle[data-palette='amber'] {
+  --c1: #e39b2b;
+  --c2: #ffd7a1;
+  --c3: #ef7d45;
+  --c4: #fff0cf;
+}
+
+.settle[data-palette='mint'] {
+  --c1: #3fbea6;
+  --c2: #b7f3dc;
+  --c3: #8eb6ff;
+  --c4: #e7fff6;
+}
+
+.settle-body {
+  position: relative;
+  z-index: 1;
+  user-select: text;
+  color: var(--ink);
+  background: transparent;
+}
+
+.settle-rim,
+.settle-sweep,
+.settle-particles,
+.settle-particle {
+  pointer-events: none;
+}
+
+.settle-rim {
+  position: absolute;
+  z-index: 0;
+  inset: -8px;
+  border-radius: 26px;
+  opacity: 0;
+  background:
+    radial-gradient(50% 80% at 12% 0%, color-mix(in srgb, var(--c2) 70%, transparent), transparent 70%),
+    radial-gradient(40% 70% at 100% 80%, color-mix(in srgb, var(--c3) 55%, transparent), transparent 72%);
+  filter: blur(8px);
+}
+
+.settle-sweep {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 28%;
+  opacity: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    color-mix(in srgb, white 18%, transparent) 36%,
+    color-mix(in srgb, white 92%, var(--c4)) 50%,
+    color-mix(in srgb, white 18%, transparent) 64%,
+    transparent 100%
+  );
+  transform: translateX(-120%) skewX(-12deg);
+}
+
+.settle-particles {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  overflow: visible;
+}
+
+.settle-particle {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--c2);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--c2) 75%, white);
+}
+
+.settle-particle:nth-child(4n + 1) {
+  width: 6px;
+  height: 6px;
+  background: var(--c1);
+}
+
+.settle-particle:nth-child(4n + 2) {
+  background: var(--c3);
+}
+
+.settle-particle:nth-child(4n + 3) {
+  width: 5px;
+  height: 5px;
+  background: var(--c4);
+}
+
+.settle[data-phase='pending'],
+.settle[data-phase='sweeping'],
+.settle[data-phase='dissolving'] {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    conic-gradient(
+        from var(--settle-angle),
+        var(--c1),
+        var(--c2),
+        var(--c3),
+        var(--c4),
+        var(--c1)
+      )
+      border-box;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 80%, var(--c2)),
+    0 14px 34px -24px color-mix(in srgb, var(--c1) 85%, transparent);
+}
+
+.settle[data-phase='pending'] .settle-rim,
+.settle[data-phase='sweeping'] .settle-rim {
+  opacity: 1;
+}
+
+.settle[data-phase='pending'][data-reduce='false'],
+.settle[data-phase='sweeping'][data-reduce='false'],
+.settle[data-phase='pending'][data-reduce='system'],
+.settle[data-phase='sweeping'][data-reduce='system'] {
+  animation: settle-spin 8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settle[data-reduce='system'][data-phase='pending'],
+  .settle[data-reduce='system'][data-phase='sweeping'],
+  .settle[data-reduce='system'][data-phase='dissolving'] {
+    animation: none;
+  }
+}
+
+.settle[data-reduce='false'] {
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.settle[data-phase='settled'],
+.settle[data-phase='error'] {
+  animation: none;
+  background: var(--surface);
+  box-shadow: none;
+}
+
+.settle[data-phase='settled'] {
+  border-color: var(--line);
+}
+
+.settle[data-phase='error'] {
+  border-color: color-mix(in srgb, #9f3a34 70%, var(--surface));
+}
+
+@keyframes settle-spin {
+  to {
+    --settle-angle: 360deg;
+  }
+}
+
+.settle-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .settle {
+    --surface: #1b1a18;
+    --ink: #f6f1e8;
+    --line: color-mix(in srgb, var(--ink) 18%, var(--surface));
+  }
+}
+
+@media (forced-colors: active) {
+  .settle {
+    border: 2px solid CanvasText;
+    background: Canvas;
+    box-shadow: none;
+    animation: none;
+  }
+
+  .settle-rim,
+  .settle-sweep,
+  .settle-particles {
+    display: none;
+  }
+}
